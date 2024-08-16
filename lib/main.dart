@@ -6,7 +6,7 @@ import 'package:mynotes/firebase_options.dart';
 // import 'package:mynotes/views/register_view.dart';
 
 void main() {
-  // initialize flutter b4 anything else
+  // initialize flutter b4 anything else.
   WidgetsFlutterBinding.ensureInitialized();
 
   runApp(
