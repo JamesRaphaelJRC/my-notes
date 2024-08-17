@@ -5,6 +5,7 @@ import 'package:mynotes/firebase_options.dart';
 import 'package:mynotes/views/login_view.dart';
 import 'package:mynotes/views/register_view.dart';
 import 'package:mynotes/views/verify_email_view.dart';
+import 'dart:developer' show log;
 
 void main() {
   // initialize flutter b4 anything else.
@@ -49,16 +50,99 @@ class HomePage extends StatelessWidget {
 
             if (user != null) {
               if (user.emailVerified) {
-                print('email is verified');
+                log('email is verified');
               } else {
                 return const VerifyEmailView();
               }
             } else {
               return const LoginView();
             }
-            return const Text('done');
+            return const Notes();
           }
           return const Center(child: Text('Unexpected state'));
         });
   }
+}
+
+enum MenuAction { logout }
+
+class Notes extends StatefulWidget {
+  const Notes({super.key});
+
+  @override
+  State<Notes> createState() => _NotesState();
+}
+
+class _NotesState extends State<Notes> {
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: const Text('My Notes'),
+        backgroundColor: Colors.blue,
+        actions: [
+          PopupMenuButton<MenuAction>(
+            // onSelected is called when a menu item is clicked
+            onSelected: (value) async {
+              switch (value) {
+                case MenuAction.logout:
+                  // when logout is clicked, show the dialog and await response
+                  final shouldLogout = await showLogOutDialog(context);
+                  if (mounted && shouldLogout) {
+                    await FirebaseAuth.instance.signOut();
+                    // Ensure the widget is still mounted before navigating
+                    if (mounted) {
+                      signOutAndNavigate();
+                    }
+                  }
+                  break;
+              }
+            },
+            itemBuilder: (context) {
+              return const [
+                PopupMenuItem<MenuAction>(
+                    // value is just like value in html input and text is what
+                    // user sees
+                    value: MenuAction.logout,
+                    child: Text('Logout'))
+              ];
+            },
+          )
+        ],
+      ),
+      body: const Text('Hello Notes'),
+    );
+  }
+
+  Future<void> signOutAndNavigate() async {
+    await FirebaseAuth.instance.signOut();
+    // Ensure this operation is performed only if the widget is still mounted
+    if (mounted) {
+      Navigator.of(context).pushNamedAndRemoveUntil('/login', (route) => false);
+    }
+  }
+}
+
+Future<bool> showLogOutDialog(BuildContext context) {
+  return showDialog(
+    context: context,
+    builder: (context) {
+      return AlertDialog(
+        title: const Text('Sign out'),
+        content: const Text('Are you sure you want to sign out?'),
+        actions: [
+          TextButton(
+              onPressed: () {
+                Navigator.of(context).pop(false);
+              },
+              child: const Text('Cancel')),
+          TextButton(
+              onPressed: () {
+                Navigator.of(context).pop(true);
+              },
+              child: const Text('Logout'))
+        ],
+      );
+    },
+  ).then((value) => value ?? false);
 }
