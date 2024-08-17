@@ -2,6 +2,8 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'dart:developer' show log;
 
+import 'package:mynotes/constants/routes.dart';
+
 class LoginView extends StatefulWidget {
   const LoginView({super.key});
 
@@ -75,7 +77,7 @@ class _LoginViewState extends State<LoginView> {
           ),
           TextButton(
               onPressed: () {
-                Navigator.pushNamed(context, '/register');
+                Navigator.pushNamed(context, registerRoute);
               },
               child: const Text('Not registered? Register here!'))
         ],
@@ -86,6 +88,6 @@ class _LoginViewState extends State<LoginView> {
   void redirectToHomePage() {
     // false means just remove every routes from the view stack and push this
     // new one to the screen
-    Navigator.of(context).pushNamedAndRemoveUntil('/notes/', (route) => false);
+    Navigator.of(context).pushNamedAndRemoveUntil(notesRoute, (route) => false);
   }
 }
