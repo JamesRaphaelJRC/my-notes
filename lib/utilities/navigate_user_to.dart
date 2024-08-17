@@ -5,7 +5,7 @@ import 'package:mynotes/constants/material_app_consts.dart';
 /// If allowedBackNavigation is True, pushNamed() is used else
 /// pushNamedAndRemovedUntil() is used
 ///
-void sendUserTo(String route, bool allowBackNavigation) {
+void navigateTo(String route, bool allowBackNavigation) {
   final context = navigatorKey.currentContext!;
 
   if (allowBackNavigation) {

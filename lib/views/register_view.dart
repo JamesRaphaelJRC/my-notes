@@ -1,7 +1,8 @@
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:mynotes/constants/routes.dart';
-import 'package:mynotes/utilities/send_user_to.dart';
+import 'package:mynotes/services/auth/auth_exceptions.dart';
+import 'package:mynotes/services/auth/auth_service.dart';
+import 'package:mynotes/utilities/navigate_user_to.dart';
 import 'package:mynotes/utilities/show_error_dialog.dart';
 
 class RegisterView extends StatefulWidget {
@@ -60,34 +61,29 @@ class _RegisterViewState extends State<RegisterView> {
               final email = _email.text;
               final password = _password.text;
               try {
-                await FirebaseAuth.instance.createUserWithEmailAndPassword(
+                await AuthService.firebase().createUser(
                   email: email,
                   password: password,
                 );
-                final user = FirebaseAuth.instance.currentUser;
-                await user?.sendEmailVerification();
-                sendUserTo(verifyEmailRoute, true);
-              } on FirebaseAuthException catch (e) {
-                if (e.code == 'weak-password') {
-                  await showErrorDialog('The password provided is too weak.');
-                } else if (e.code == 'email-already-in-use') {
-                  await showErrorDialog(
-                    'The account already exists for this email.',
-                  );
-                } else if (e.code == 'invalid-email') {
-                  await showErrorDialog('Invalid email address');
-                } else {
-                  await showErrorDialog('Error: ${e.code}');
-                }
-              } catch (e) {
-                showErrorDialog(e.toString());
+                await AuthService.firebase().sendEmailVerification();
+                navigateTo(verifyEmailRoute, true);
+              } on WeakPasswordAuthException {
+                await showErrorDialog('The password provided is too weak.');
+              } on EmailAlreadyInUseAuthException {
+                await showErrorDialog(
+                  'The account already exists for this email.',
+                );
+              } on InvalidEmainAuthException {
+                await showErrorDialog('Invalid email address');
+              } on GenericAuthException {
+                await showErrorDialog(' Oops registration failed!');
               }
             },
             child: const Text("Register"),
           ),
           TextButton(
               onPressed: () {
-                sendUserTo(loginRoute, true);
+                navigateTo(loginRoute, true);
               },
               child: const Text('Already registserd? Login here'))
         ],

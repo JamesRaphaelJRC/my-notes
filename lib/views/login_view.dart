@@ -1,8 +1,9 @@
 // import 'dart:developer' show log;
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:mynotes/constants/routes.dart';
-import 'package:mynotes/utilities/send_user_to.dart';
+import 'package:mynotes/services/auth/auth_exceptions.dart';
+import 'package:mynotes/services/auth/auth_service.dart';
+import 'package:mynotes/utilities/navigate_user_to.dart';
 import 'package:mynotes/utilities/show_error_dialog.dart';
 
 class LoginView extends StatefulWidget {
@@ -61,32 +62,20 @@ class _LoginViewState extends State<LoginView> {
               final email = _email.text;
               final password = _password.text;
               try {
-                await FirebaseAuth.instance.signInWithEmailAndPassword(
+                await AuthService.firebase().login(
                   email: email,
                   password: password,
                 );
                 // get latest user object
-                final currentUser = FirebaseAuth.instance.currentUser;
-                if (currentUser?.emailVerified ?? false) {
-                  sendUserTo(notesRoute, false);
+                final currentUser = AuthService.firebase().currentUser;
+                if (currentUser?.isEmailVerified ?? false) {
+                  navigateTo(notesRoute, false);
                 } else {
-                  sendUserTo(verifyEmailRoute, false);
+                  navigateTo(verifyEmailRoute, false);
                 }
-              } on FirebaseAuthException catch (e) {
-                List<String> credentialErrors = [
-                  'invalid-email',
-                  'user-not-found',
-                  'wrong-password',
-                  'invalid-credential',
-                ];
-                if (credentialErrors.contains(e.code)) {
-                  await showErrorDialog('Invalid credentials');
-                } else {
-                  await showErrorDialog(
-                    'An unknown error occurred.',
-                  );
-                }
-              } catch (e) {
+              } on InvalidCredentialsAuthException {
+                await showErrorDialog('Invalid credentials');
+              } on GenericAuthException {
                 await showErrorDialog('An unexpected error occurred');
               }
             },
@@ -94,7 +83,7 @@ class _LoginViewState extends State<LoginView> {
           ),
           TextButton(
               onPressed: () {
-                sendUserTo(registerRoute, true);
+                navigateTo(registerRoute, true);
               },
               child: const Text('Not registered? Register here!'))
         ],
