@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:mynotes/main.dart';
+import 'package:mynotes/constants/material_app_consts.dart';
 
 Future<void> showErrorDialog(String text) {
   return showDialog(

@@ -2,8 +2,10 @@ import 'dart:developer' show log;
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
+import 'package:mynotes/constants/material_app_consts.dart';
 import 'package:mynotes/constants/routes.dart';
 import 'package:mynotes/firebase_options.dart';
+import 'package:mynotes/utilities/send_user_to.dart';
 import 'package:mynotes/views/login_view.dart';
 import 'package:mynotes/views/register_view.dart';
 import 'package:mynotes/views/verify_email_view.dart';
@@ -11,7 +13,6 @@ import 'package:mynotes/views/verify_email_view.dart';
 // A GlobalKey is a special type of key in Flutter that is used to uniquely
 // identify a widget across the entire app. This is different from regular keys,
 // which are only unique within a particular part of the widget tree.
-final GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
 
 void main() {
   // initialize flutter b4 anything else.
@@ -30,6 +31,7 @@ void main() {
         loginRoute: (context) => const LoginView(),
         registerRoute: (context) => const RegisterView(),
         notesRoute: (context) => const NotesView(),
+        verifyEmailRoute: (context) => const VerifyEmailView(),
       },
       // assign the global key to the nav key property
       navigatorKey: navigatorKey,
@@ -101,7 +103,7 @@ class _NotesViewState extends State<NotesView> {
                     await FirebaseAuth.instance.signOut();
                     // Ensure the widget is still mounted before navigating
                     if (mounted) {
-                      signOutAndNavigate();
+                      sendUserTo(loginRoute, false);
                     }
                   }
                   break;
@@ -121,15 +123,6 @@ class _NotesViewState extends State<NotesView> {
       ),
       body: const Text('Hello Notes'),
     );
-  }
-
-  Future<void> signOutAndNavigate() async {
-    await FirebaseAuth.instance.signOut();
-    // Ensure this operation is performed only if the widget is still mounted
-    if (mounted) {
-      Navigator.of(context)
-          .pushNamedAndRemoveUntil(loginRoute, (route) => false);
-    }
   }
 }
 

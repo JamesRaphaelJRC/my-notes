@@ -2,6 +2,7 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:mynotes/constants/routes.dart';
+import 'package:mynotes/utilities/send_user_to.dart';
 import 'package:mynotes/utilities/show_error_dialog.dart';
 
 class LoginView extends StatefulWidget {
@@ -64,7 +65,7 @@ class _LoginViewState extends State<LoginView> {
                   email: email,
                   password: password,
                 );
-                redirectToHomePage();
+                sendUserTo(notesRoute, false);
               } on FirebaseAuthException catch (e) {
                 List<String> credentialErrors = [
                   'invalid-email',
@@ -87,17 +88,11 @@ class _LoginViewState extends State<LoginView> {
           ),
           TextButton(
               onPressed: () {
-                Navigator.pushNamed(context, registerRoute);
+                sendUserTo(registerRoute, true);
               },
               child: const Text('Not registered? Register here!'))
         ],
       ),
     );
-  }
-
-  void redirectToHomePage() {
-    // false means just remove every routes from the view stack and push this
-    // new one to the screen
-    Navigator.of(context).pushNamedAndRemoveUntil(notesRoute, (route) => false);
   }
 }

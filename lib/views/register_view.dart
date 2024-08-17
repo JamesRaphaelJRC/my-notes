@@ -1,8 +1,8 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'dart:developer' show log;
-
 import 'package:mynotes/constants/routes.dart';
+import 'package:mynotes/utilities/send_user_to.dart';
+import 'package:mynotes/utilities/show_error_dialog.dart';
 
 class RegisterView extends StatefulWidget {
   const RegisterView({super.key});
@@ -60,29 +60,34 @@ class _RegisterViewState extends State<RegisterView> {
               final email = _email.text;
               final password = _password.text;
               try {
-                UserCredential userCredential =
-                    await FirebaseAuth.instance.createUserWithEmailAndPassword(
+                await FirebaseAuth.instance.createUserWithEmailAndPassword(
                   email: email,
                   password: password,
                 );
-                log(userCredential.toString());
+                final user = FirebaseAuth.instance.currentUser;
+                await user?.sendEmailVerification();
+                sendUserTo(verifyEmailRoute, true);
               } on FirebaseAuthException catch (e) {
                 if (e.code == 'weak-password') {
-                  log('The password provided is too weak.');
+                  await showErrorDialog('The password provided is too weak.');
                 } else if (e.code == 'email-already-in-use') {
-                  log('The account already exists for that email.');
+                  await showErrorDialog(
+                    'The account already exists for this email.',
+                  );
                 } else if (e.code == 'invalid-email') {
-                  log('Invalid email');
+                  await showErrorDialog('Invalid email address');
+                } else {
+                  await showErrorDialog('Error: ${e.code}');
                 }
               } catch (e) {
-                log(e.toString());
+                showErrorDialog(e.toString());
               }
             },
             child: const Text("Register"),
           ),
           TextButton(
               onPressed: () {
-                Navigator.pushNamed(context, loginRoute);
+                sendUserTo(loginRoute, true);
               },
               child: const Text('Already registserd? Login here'))
         ],
