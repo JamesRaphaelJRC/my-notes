@@ -21,8 +21,9 @@ void main() {
       // home: const HomePage(),
       routes: {
         '/': (context) => const HomePage(),
-        '/login': (context) => const LoginView(),
-        '/register': (context) => const RegisterView()
+        '/login/': (context) => const LoginView(),
+        '/register/': (context) => const RegisterView(),
+        '/notes/': (context) => const NotesView(),
       },
     ),
   );
@@ -57,7 +58,7 @@ class HomePage extends StatelessWidget {
             } else {
               return const LoginView();
             }
-            return const Notes();
+            return const NotesView();
           }
           return const Center(child: Text('Unexpected state'));
         });
@@ -66,14 +67,14 @@ class HomePage extends StatelessWidget {
 
 enum MenuAction { logout }
 
-class Notes extends StatefulWidget {
-  const Notes({super.key});
+class NotesView extends StatefulWidget {
+  const NotesView({super.key});
 
   @override
-  State<Notes> createState() => _NotesState();
+  State<NotesView> createState() => _NotesViewState();
 }
 
-class _NotesState extends State<Notes> {
+class _NotesViewState extends State<NotesView> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(

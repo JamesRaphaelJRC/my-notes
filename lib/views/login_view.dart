@@ -58,10 +58,10 @@ class _LoginViewState extends State<LoginView> {
               final email = _email.text;
               final password = _password.text;
               try {
-                UserCredential userCredential = await FirebaseAuth.instance
-                    .signInWithEmailAndPassword(
-                        email: email, password: password);
-                log(userCredential.toString());
+                await FirebaseAuth.instance.signInWithEmailAndPassword(
+                  email: email,
+                  password: password,
+                );
                 redirectToHomePage();
               } on FirebaseAuthException catch (e) {
                 if (e.code == 'user-not-found') {
@@ -84,6 +84,8 @@ class _LoginViewState extends State<LoginView> {
   }
 
   void redirectToHomePage() {
-    Navigator.popAndPushNamed(context, '/');
+    // false means just remove every routes from the view stack and push this
+    // new one to the screen
+    Navigator.of(context).pushNamedAndRemoveUntil('/notes/', (route) => false);
   }
 }
