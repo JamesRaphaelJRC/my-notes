@@ -65,7 +65,13 @@ class _LoginViewState extends State<LoginView> {
                   email: email,
                   password: password,
                 );
-                sendUserTo(notesRoute, false);
+                // get latest user object
+                final currentUser = FirebaseAuth.instance.currentUser;
+                if (currentUser?.emailVerified ?? false) {
+                  sendUserTo(notesRoute, false);
+                } else {
+                  sendUserTo(verifyEmailRoute, false);
+                }
               } on FirebaseAuthException catch (e) {
                 List<String> credentialErrors = [
                   'invalid-email',
