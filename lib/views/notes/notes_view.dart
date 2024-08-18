@@ -39,6 +39,11 @@ class _NotesViewState extends State<NotesView> {
         title: const Text('My Notes'),
         backgroundColor: Colors.blue,
         actions: [
+          IconButton(
+              onPressed: () {
+                navigateTo(newNoteRoute, true);
+              },
+              icon: const Icon(Icons.add)),
           PopupMenuButton<MenuAction>(
             // onSelected is called when a menu item is clicked
             onSelected: (value) async {
@@ -65,7 +70,7 @@ class _NotesViewState extends State<NotesView> {
                     child: Text('Logout'))
               ];
             },
-          )
+          ),
         ],
       ),
       body: FutureBuilder(
