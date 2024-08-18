@@ -3,6 +3,7 @@ import 'package:mynotes/constants/material_app_consts.dart';
 import 'package:mynotes/constants/routes.dart';
 import 'package:mynotes/enums/menu_action.dart';
 import 'package:mynotes/services/auth/auth_service.dart';
+import 'package:mynotes/services/crud/notes_service.dart';
 import 'package:mynotes/utilities/navigate_user_to.dart';
 
 class NotesView extends StatefulWidget {
@@ -13,6 +14,24 @@ class NotesView extends StatefulWidget {
 }
 
 class _NotesViewState extends State<NotesView> {
+  String get userEmail => AuthService.firebase().currentUser!.email!;
+  late final NotesService _notesService;
+
+  @override
+  void initState() {
+    // instantiate a NoteService during the rendering of this
+    // widget
+    _notesService = NotesService();
+    super.initState();
+  }
+
+  @override
+  void dispose() {
+    // close noteservice db
+    _notesService.close();
+    super.dispose();
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -49,7 +68,37 @@ class _NotesViewState extends State<NotesView> {
           )
         ],
       ),
-      body: const Text('Hello Notes'),
+      body: FutureBuilder(
+        // ensures user is created in the db
+        future: _notesService.getOrCreateUser(email: userEmail),
+        builder: (context, snapshot) {
+          // snapshot is the returned value from the future function
+          switch (snapshot.connectionState) {
+            case ConnectionState.done:
+              if (snapshot.hasError) {
+                return Text('Error: ${snapshot.error}');
+              } else if (snapshot.hasData) {
+                return StreamBuilder(
+                  stream: _notesService.allNotes,
+                  builder: (context, snapshot) {
+                    switch (snapshot.connectionState) {
+                      case ConnectionState.waiting:
+                        return const Text('Waiting for notes to load...');
+                      case ConnectionState.done:
+                        return const Text("here are the notes");
+                      default:
+                        return const CircularProgressIndicator();
+                    }
+                  },
+                );
+              } else {
+                return const Text('User does not exist in the database');
+              }
+            default:
+              return const CircularProgressIndicator();
+          }
+        },
+      ),
     );
   }
 }
