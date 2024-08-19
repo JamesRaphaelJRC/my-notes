@@ -5,12 +5,20 @@ import 'package:mynotes/constants/material_app_consts.dart';
 /// If allowedBackNavigation is True, pushNamed() is used else
 /// pushNamedAndRemovedUntil() is used
 ///
-void navigateTo(String route, bool allowBackNavigation) {
+void navigateTo({
+  required String route,
+  required bool allowBackNavigation,
+  Object? arguments,
+}) {
   final context = navigatorKey.currentContext!;
 
   if (allowBackNavigation) {
-    Navigator.of(context).pushNamed(route);
+    Navigator.of(context).pushNamed(route, arguments: arguments);
   } else {
-    Navigator.of(context).pushNamedAndRemoveUntil(route, (_) => false);
+    Navigator.of(context).pushNamedAndRemoveUntil(
+      route,
+      (_) => false,
+      arguments: arguments,
+    );
   }
 }

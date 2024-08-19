@@ -35,7 +35,10 @@ class _NotesViewState extends State<NotesView> {
         actions: [
           IconButton(
               onPressed: () {
-                navigateTo(newNoteRoute, true);
+                navigateTo(
+                  route: createOrUpdateNoteRoute,
+                  allowBackNavigation: true,
+                );
               },
               icon: const Icon(Icons.add)),
           PopupMenuButton<MenuAction>(
@@ -49,7 +52,10 @@ class _NotesViewState extends State<NotesView> {
                     await AuthService.firebase().logout();
                     // Ensure the widget is still mounted before navigating
                     if (mounted) {
-                      navigateTo(loginRoute, false);
+                      navigateTo(
+                        route: loginRoute,
+                        allowBackNavigation: false,
+                      );
                     }
                   }
                   break;
@@ -92,6 +98,13 @@ class _NotesViewState extends State<NotesView> {
                             notes: allNotes,
                             onDeleteNote: (note) async {
                               await _notesService.deleteNote(id: note.id);
+                            },
+                            onTap: (note) {
+                              navigateTo(
+                                route: createOrUpdateNoteRoute,
+                                allowBackNavigation: true,
+                                arguments: note,
+                              );
                             },
                           );
                         } else {

@@ -69,9 +69,15 @@ class _LoginViewState extends State<LoginView> {
                 // get latest user object
                 final currentUser = AuthService.firebase().currentUser;
                 if (currentUser?.isEmailVerified ?? false) {
-                  navigateTo(notesRoute, false);
+                  navigateTo(
+                    route: notesRoute,
+                    allowBackNavigation: false,
+                  );
                 } else {
-                  navigateTo(verifyEmailRoute, false);
+                  navigateTo(
+                    route: verifyEmailRoute,
+                    allowBackNavigation: false,
+                  );
                 }
               } on InvalidCredentialsAuthException {
                 await showErrorDialog('Invalid credentials');
@@ -83,7 +89,10 @@ class _LoginViewState extends State<LoginView> {
           ),
           TextButton(
               onPressed: () {
-                navigateTo(registerRoute, true);
+                navigateTo(
+                  route: registerRoute,
+                  allowBackNavigation: true,
+                );
               },
               child: const Text('Not registered? Register here!'))
         ],

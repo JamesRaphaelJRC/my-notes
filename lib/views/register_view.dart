@@ -66,7 +66,10 @@ class _RegisterViewState extends State<RegisterView> {
                   password: password,
                 );
                 await AuthService.firebase().sendEmailVerification();
-                navigateTo(verifyEmailRoute, true);
+                navigateTo(
+                  route: verifyEmailRoute,
+                  allowBackNavigation: true,
+                );
               } on WeakPasswordAuthException {
                 await showErrorDialog('The password provided is too weak.');
               } on EmailAlreadyInUseAuthException {
@@ -83,7 +86,10 @@ class _RegisterViewState extends State<RegisterView> {
           ),
           TextButton(
               onPressed: () {
-                navigateTo(loginRoute, true);
+                navigateTo(
+                  route: loginRoute,
+                  allowBackNavigation: true,
+                );
               },
               child: const Text('Already registserd? Login here'))
         ],
