@@ -13,7 +13,14 @@ class NotesService {
 
   // create a singleton for NoteService
   static final NotesService _shared = NotesService._sharedInstance();
-  NotesService._sharedInstance();
+  NotesService._sharedInstance() {
+    _notesStreamController = StreamController<List<DatabaseNote>>.broadcast(
+      // populate all notes _notes to any new listener
+      onListen: () {
+        _notesStreamController.sink.add(_notes);
+      },
+    );
+  }
 
   // A factory for creating the singleton instance
   // so calling the NoteService, calls the factory and return same single
@@ -21,8 +28,7 @@ class NotesService {
   factory NotesService() => _shared;
 
   // controller for the UI
-  final _notesStreamController =
-      StreamController<List<DatabaseNote>>.broadcast();
+  late final StreamController<List<DatabaseNote>> _notesStreamController;
 
   Stream<List<DatabaseNote>> get allNotes => _notesStreamController.stream;
 
@@ -268,7 +274,7 @@ class NotesService {
 }
 
 /// DatabaseUser class that models the db schema. Each user has an id and an
-/// email 
+/// email
 @immutable
 class DatabaseUser {
   final int id;

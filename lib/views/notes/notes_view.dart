@@ -26,13 +26,6 @@ class _NotesViewState extends State<NotesView> {
   }
 
   @override
-  void dispose() {
-    // close noteservice db
-    _notesService.close();
-    super.dispose();
-  }
-
-  @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
@@ -90,8 +83,27 @@ class _NotesViewState extends State<NotesView> {
                       case ConnectionState
                             .waiting: // leave empty i.e. fall true
                       case ConnectionState.active:
-                      // when 1 note has been created/returned it changes to
-                      // active
+                        // when 1 note has been created/returned it changes to
+                        // active
+                        if (snapshot.hasData) {
+                          final allNotes = snapshot.data as List<DatabaseNote>;
+                          return ListView.builder(
+                            itemCount: allNotes.length,
+                            itemBuilder: (context, index) {
+                              final note = allNotes[index];
+                              return ListTile(
+                                title: Text(
+                                  note.text,
+                                  maxLines: 1,
+                                  softWrap: true,
+                                  overflow: TextOverflow.ellipsis,
+                                ),
+                              );
+                            },
+                          );
+                        } else {
+                          return const CircularProgressIndicator();
+                        }
 
                       case ConnectionState.done:
                         return const Text("here are the notes");
