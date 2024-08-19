@@ -51,9 +51,7 @@ class NotesService {
   }
 
   Future<void> open() async {
-    if (_db != null) {
-      throw DatabaseAlreadyOpenException();
-    }
+    if (_db != null) throw DatabaseAlreadyOpenException();
     try {
       final docsPath = await getApplicationDocumentsDirectory();
       final dbPath = join(docsPath.path, dbName);
@@ -269,6 +267,8 @@ class NotesService {
   }
 }
 
+/// DatabaseUser class that models the db schema. Each user has an id and an
+/// email 
 @immutable
 class DatabaseUser {
   final int id;
@@ -276,6 +276,12 @@ class DatabaseUser {
 
   const DatabaseUser({required this.id, required this.email});
 
+  /// a constructor that instantiates a new db user using a map.
+  /// Example is a map that might come from a database row.
+  /// Map<String, Object?> someMap = {
+  ///   'id': 123,
+  ///  'email': 'example@example.com',
+  /// };
   DatabaseUser.fromRow(Map<String, Object?> map)
       : id = map[idColumn] as int,
         email = map[emailColumn] as String;
@@ -293,6 +299,8 @@ class DatabaseUser {
   int get hashCode => id.hashCode;
 }
 
+/// DatabaseNote class that models the db schema. Each note has an id and a
+/// foreignKey to user, a text and a boolean field - is_synced_with_cloud
 class DatabaseNote {
   final int id;
   final int userId;
@@ -325,6 +333,7 @@ class DatabaseNote {
   int get hashCode => id.hashCode;
 }
 
+// constants used in this dart file
 const dbName = 'notes.db';
 const noteTable = 'note';
 const userTable = 'user';

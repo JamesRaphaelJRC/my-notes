@@ -87,8 +87,12 @@ class _NotesViewState extends State<NotesView> {
                   stream: _notesService.allNotes,
                   builder: (context, snapshot) {
                     switch (snapshot.connectionState) {
-                      case ConnectionState.waiting:
-                        return const Text('Waiting for notes to load...');
+                      case ConnectionState
+                            .waiting: // leave empty i.e. fall true
+                      case ConnectionState.active:
+                      // when 1 note has been created/returned it changes to
+                      // active
+
                       case ConnectionState.done:
                         return const Text("here are the notes");
                       default:
