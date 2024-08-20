@@ -8,7 +8,8 @@ import 'package:mynotes/constants/material_app_consts.dart';
 void navigateTo({
   required String route,
   required bool allowBackNavigation,
-  Object? arguments,
+  dynamic
+   arguments,
 }) {
   final context = navigatorKey.currentContext!;
 
