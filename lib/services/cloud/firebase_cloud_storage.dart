@@ -14,11 +14,17 @@ class FirebaseCloudStorage {
   // factory constructor that returns the singleton
   factory FirebaseCloudStorage() => _shared;
 
-  void createNewNote({required ownerUserId}) async {
-    await notes.add({
+  Future<CloudNote> createNewNote({required ownerUserId}) async {
+    final document = await notes.add({
       ownerUseridFieldName: ownerUserId,
       textFieldName: '',
     });
+    final fetchedNote = await document.get();
+    return CloudNote(
+      documentId: fetchedNote.id,
+      ownerUserId: ownerUserId,
+      text: "",
+    );
   }
 
   Future<Iterable<CloudNote>> getNotes({required ownerUserId}) async {
@@ -26,14 +32,10 @@ class FirebaseCloudStorage {
       return await notes
           .where(ownerUseridFieldName, isEqualTo: ownerUserId)
           .get()
-          .then((value) => value.docs.map((doc) {
-                return CloudNote(
-                  documentId: doc.id,
-                  ownerUserId: doc.data()[ownerUseridFieldName],
-                  text: doc.data()[textFieldName] as String,
-                );
-              }));
-    } catch (e) {
+          .then((value) => value.docs.map(
+                (doc) => CloudNote.fromSnapshot(doc),
+              ));
+    } catch (_) {
       throw CouldNotGetAllNotesException();
     }
   }
@@ -62,6 +64,4 @@ class FirebaseCloudStorage {
       throw CouldNotDeleteNoteException();
     }
   }
-
-  
 }
