@@ -1,6 +1,4 @@
 // import 'dart:developer' show log;
-import 'dart:developer';
-
 import 'package:flutter/material.dart';
 import 'package:mynotes/constants/routes.dart';
 import 'package:mynotes/services/auth/auth_exceptions.dart';
@@ -64,22 +62,18 @@ class _LoginViewState extends State<LoginView> {
               final email = _email.text;
               final password = _password.text;
               try {
-                log('Logging in');
                 await AuthService.firebase().login(
                   email: email,
                   password: password,
                 );
-                log('DOne Logging in');
                 // get latest user object
                 final currentUser = AuthService.firebase().currentUser;
                 if (currentUser?.isEmailVerified ?? false) {
-                  log('sending to notes');
                   navigateTo(
                     route: notesRoute,
                     allowBackNavigation: false,
                   );
                 } else {
-                  log('sending to verify');
                   navigateTo(
                     route: verifyEmailRoute,
                     allowBackNavigation: false,
