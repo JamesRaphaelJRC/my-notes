@@ -117,7 +117,7 @@ class _CreateUpdateNoteViewState extends State<CreateUpdateNoteView> {
                 if (_note == null || text.isEmpty) {
                   await showCannotShareEmptyNoteDialog(context);
                 } else {
-                  // share the note
+                  // share the note's text
                   Share.share(text);
                 }
               },
