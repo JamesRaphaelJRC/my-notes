@@ -16,7 +16,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
 
         // provider is initialized but no user meaning user is logged out
         if (user == null) {
-          emit(const AuthStateLoggedOut());
+          emit(const AuthStateLoggedOut(null));
         } else if (!user.isEmailVerified) {
           emit(const AuthStateNeedsVerification());
         } else {
@@ -31,11 +31,11 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
         final password = event.password;
 
         try {
-          emit(const AuthStateLoading());
+          // emit(const AuthStateLoading());
           final user = await provider.login(email: email, password: password);
           emit(AuthStateLoggedIn(user: user));
         } on Exception catch (e) {
-          emit(AuthStateLoginFailure(exception: e));
+          emit(AuthStateLoggedOut(e));
         }
       },
     );
@@ -46,7 +46,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
         try {
           emit(const AuthStateLoading());
           await provider.logout();
-          emit(const AuthStateLoggedOut());
+          emit(const AuthStateLoggedOut(null));
         } on Exception catch (e) {
           emit(AuthStateLoggedOutFailure(exception: e));
         }

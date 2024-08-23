@@ -5,6 +5,7 @@ import 'package:mynotes/constants/routes.dart';
 import 'package:mynotes/services/auth/auth_exceptions.dart';
 import 'package:mynotes/services/auth/bloc/auth_bloc.dart';
 import 'package:mynotes/services/auth/bloc/auth_event.dart';
+import 'package:mynotes/services/auth/bloc/auth_state.dart';
 import 'package:mynotes/utilities/dialogs/error_dialog.dart';
 import 'package:mynotes/utilities/navigate_user_to.dart';
 
@@ -59,21 +60,26 @@ class _LoginViewState extends State<LoginView> {
             enableSuggestions: false,
             autocorrect: false,
           ),
-          TextButton(
-            onPressed: () async {
-              final email = _email.text;
-              final password = _password.text;
-              try {
+          BlocListener<AuthBloc, AuthState>(
+            listener: (context, state) async {
+              if (state is AuthStateLoggedOut) {
+                if (state.exception is InvalidCredentialsAuthException) {
+                  await showErrorDialog('Invalid credentials');
+                } else if (state.exception is GenericAuthException) {
+                  await showErrorDialog('An unexpected error occurred');
+                }
+              }
+            },gmai
+            child: TextButton(
+              onPressed: () async {
+                final email = _email.text;
+                final password = _password.text;
                 context
                     .read<AuthBloc>()
                     .add(AuthEventLogin(email: email, password: password));
-              } on InvalidCredentialsAuthException {
-                await showErrorDialog('Invalid credentials');
-              } on GenericAuthException {
-                await showErrorDialog('An unexpected error occurred');
-              }
-            },
-            child: const Text("Login"),
+              },
+              child: const Text("Login"),
+            ),
           ),
           TextButton(
               onPressed: () {
